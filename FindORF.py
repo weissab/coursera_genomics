@@ -21,31 +21,30 @@ def find_codon(frame, sequence, matches):
     return None, None
 
 
-#def open_reading_frames(frame, seqs):
-    #"This function says if a DNA sequence contains an in-frame stop codon"
-
-
-def open_reading_frame(frame, seqs, seqs_ORF_len, k):
+def find_one_frame(frame, sequence, seqs_ORF_len, k, key):
     start_codons = ['ATG']
     stop_codons = ['TGA', 'TAG', 'TAA']
+    start_index, open_sequence = find_codon(frame, sequence, start_codons)
+    if start_index is not None:
+        stop_index, next_chunk = find_codon(0, open_sequence, stop_codons)
+        if stop_index is not None:
+            if key not in seqs_ORF_len:
+                seqs_ORF_len[key] = {}
+            k += 1
+            seqs_ORF_len[key][k] = {
+                "start_index": start_index,
+                "stop_index": start_index + stop_index + 3,
+                "length": stop_index + 3
+            }
+            if len(next_chunk) >= 3:
+                return find_one_frame(0, next_chunk[3:], seqs_ORF_len, k, key)
+
+
+def open_reading_frame(frame, seqs):
+    seqs_ORF_len = {}
+    k = 0
     for key, sequence in seqs.items():
-        start_index, open_sequence = find_codon(frame, sequence, start_codons)
-        if start_index is not None:
-            stop_index, next_chunk = find_codon(0, open_sequence, stop_codons)
-            if stop_index is not None:
-                # finale_squence = open_sequence[:stop_index + 3]
-                if key not in seqs_ORF_len:
-                    seqs_ORF_len[key] = {}
-                    k += 1
-                    seqs_ORF_len[key][k] = {
-                    "start_index": start_index,
-                    "stop_index": start_index + stop_index + 3,
-                    "length": stop_index + 3
-                    }
-            return next_chunk, seqs_ORF_len, k
-        if len(next_chunk) > 0:
-            next_chunk, seqs_ORF_len, k = open_reading_frame(0, next_chunk, seqs_ORF_len, k)
-        # if len of sequence is smaller than stop index, start looking for codon start again 
+        find_one_frame(frame, sequence, seqs_ORF_len, k, key)
     return seqs_ORF_len
 
 
@@ -54,9 +53,7 @@ def main():
     f = open_file(filename)
     seqs = create_seqs(f)
     f.close()
-    seqs_ORF_len = {}
-    k = 0
-    seqs_ORF_len = open_reading_frame(frame, seqs, seqs_ORF_len, k)
+    seqs_ORF_len = open_reading_frame(frame, seqs)
     print("The tupple containing open reading frames: %s " % pretty_print(seqs_ORF_len))
 
 
