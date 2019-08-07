@@ -1,0 +1,17 @@
+#!/c/Users/Andrea/Anaconda3/python
+
+"""
+add annotation here 
+
+have to write into command window: 'chmod a+x FILENAME'
+adding this line makes the program executable
+
+to run from command window: python FILENAME
+"""
+
+# add annotation here:
+def Function_GC(dna) :
+	"this function computes the GC percentage of a dna sequence"
+	nbase=dna.count('n')+dna.count('N')
+	gcpercent=float(dna.count('c')+dna.count('C')+dna.count('g')+dna.count('G'))*100/(len(dna-nbases))
+	return gcpercent

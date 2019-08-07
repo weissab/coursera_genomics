@@ -1,0 +1,19 @@
+#!/c/Users/Andrea/Anaconda3/python
+
+"""
+add annotation here 
+
+have to write into command window: 'chmod a+x FILENAME'
+adding this line makes the program executable
+
+to run from command window: python FILENAME
+"""
+
+# add annotation here:
+dna = input('Enter DNA sequence:')
+
+pos=dna.find('gt', 0) #position of splice site - they always start with gt
+
+while pos>-1 :
+	print ("Donor splice site candidate at position %d" %pos")
+	pos=dna.find('gt', pos+1)

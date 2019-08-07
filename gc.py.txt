@@ -1,0 +1,19 @@
+#!/c/Users/Andrea/Anaconda3/python
+
+"""
+add annotation here 
+
+have to write into command window: 'chmod a+x FILENAME'
+adding this line makes the program executable
+
+to run from command window: python FILENAME
+"""
+
+# add annotation here:
+dna = input('Ender a DNA sequence, please:')
+#dna = 'acgtgagctgagctgctgagc'
+no_c = dna.count('c')
+no_g = dna.count('g')
+dna_length = len(dna)
+gc_percent = (no_c+no_g)*100/dna_length
+print (gc_percent)

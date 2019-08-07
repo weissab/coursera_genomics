@@ -1,0 +1,17 @@
+#!/c/Users/Andrea/Anaconda3/python
+
+"""
+add annotation here 
+
+have to write into command window: 'chmod a+x FILENAME'
+adding this line makes the program executable
+
+to run from command window: python FILENAME
+"""
+
+# add annotation here:
+x=100
+if x>10 or x<-10: print ('big')
+elif x>10000: print ('verybig')
+elif x<-10000: print ('verybig')
+else : print ('small')
