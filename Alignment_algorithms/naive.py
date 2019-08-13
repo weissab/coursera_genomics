@@ -2,7 +2,6 @@
 
 
 import sys
-import operator
 from libs.utils import reverse_complement, read_genome
 
 

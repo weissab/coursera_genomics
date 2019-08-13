@@ -47,7 +47,7 @@ def main():
     occur, occur_rc = naive_rc(pattern, reference_genome)
     print(" The pattern matches the genome at locations %s " % occur)
     print(" The RC matches the genome at locations %s " % occur_rc)
-    #print ("Occurences: %d, Occurences in RC: %d, Total: %d" %(len(occur), len(occur_rc), (len(occur) + len(occur_rc))))
+    print ("Occurences: %d, Occurences in RC: %d, Total: %d" %(len(occur), len(occur_rc), (len(occur) + len(occur_rc))))
 
 if __name__ == '__main__':
     main()
