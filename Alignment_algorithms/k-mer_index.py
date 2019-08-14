@@ -10,9 +10,8 @@ from libs.utils import read_genome
 def parse_args(argv):
     filename = argv[1]
     pattern = argv[2]
-    k = int(argv[3]) 
-    mismatch = int(argv[4])
-    return filename, pattern, k, mismatch
+    mismatch = int(argv[3])
+    return filename, pattern, mismatch
 
 
 """kmer_index.py: A k-mer index for indexing a text."""
@@ -27,7 +26,7 @@ class Index(object):
 
     def __init__(self, t, k):
         """ Create index from all substrings of t of length k """
-        self.k = k  # k-mer length (k)
+        self.k = 8  # k-mer length (k)
         self.index = []
         for i in range(len(t) - k + 1):  # for each k-mer
             self.index.append((t[i:i+k], i))  # add (k-mer, offset) pair
@@ -46,14 +45,61 @@ class Index(object):
         return hits
 
 
-def query_index(p, t, index, mismatch): # index created from text t
-    k = index.k
-    offsets = set()
-    segment_length = int(round(len(p) / float(mismatch + 1)))
-    for i in range(mismatch + 1):
+def approximate_match(p, t, n):
+    segment_length = int(round(len(p) / (n + 1)))
+    all_matches = set()
+    p_idx = Index(t, segment_length)
+    idx_hits = 0
+    for i in range(n + 1):
         start = i * segment_length
-        end = min((i+1) * segment_length, len(p))
-        hits = index.query(p[start:end])
+        end = min((i + 1) * segment_length, len(p))
+        matches = p_idx.query(p[start:end])
+
+        #Extend matching to see if whole of p matches
+        for m in matches:
+            idx_hits += 1
+            if m < start or m - start + len(p) > len(t):
+                continue
+
+            mismatches = 0
+
+            for j in range (0, start):
+                if not p[j] == t[m-start+j]:
+                    mismatches += 1
+                    if mismatches > n:
+                        break
+                for j in range (end, len(p)):
+                    if not p[j] == t[m - start + j]:
+                        mismatches += 1
+                    if mismatches > n:
+                        break
+                if mismatches <= n:
+                    all_matches.add(m - start)
+    return list(all_matches), idx_hits
+
+
+def main():
+    filename, pattern, mismatch = parse_args(sys.argv)
+    t = read_genome(filename)
+    all_matches, index_hits = approximate_match(pattern, t, mismatch)
+    print("there are %d exact macthes and %d index hits. Hit locations: %s" %(len(all_matches), index_hits, all_matches))
+
+    
+if __name__ == '__main__':
+    main()
+
+
+
+
+
+
+
+    """ 
+
+    def query_index(p, t, index, mismatch): # index created from text t
+        k = index.k
+        offsets = set()
+        hits = index.query(p)
         for h in hits: #gives back the location where the first k bases match, still have to double check the rest of p to see if it matches t
             m = 0
             match = True
@@ -65,20 +111,8 @@ def query_index(p, t, index, mismatch): # index created from text t
                         break
                 if match:
                     offsets.add(h)
-    return offsets, hits
-
-
-def main():
-    filename, pattern, k, mismatch = parse_args(sys.argv)
-    t = read_genome(filename)
-    index = Index(t, k)
-    exact_matches, hits = query_index(pattern, t, index, mismatch)
-    print("there are %d exact macthes and %d index hits, %s, %s" %(len(exact_matches), len(hits), exact_matches, hits))
-
-if __name__ == '__main__':
-    main()
-
-
+        return offsets, hits """
+    
 
 """ 
     def query_index(p, t, index): # index created from text t
