@@ -2,14 +2,13 @@
 
 
 import sys
-from libs.utils import reverse_complement, read_genome
+from libs.utils import read_genome
 
 
 # import file from website with ipython
 # !wget --no-check http:// ... 
 
-# if the pattern is not an inputed sequence from user but a file of reads
-# pattern, _ = readFastq('FILENAME_READS')
+# Input arguments - filename, pattern to match and number of mismatches allowed
 
 
 def parse_args(argv):

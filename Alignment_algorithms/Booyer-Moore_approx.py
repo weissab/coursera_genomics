@@ -1,5 +1,5 @@
 #!/c/Users/Andrea/Anaconda3/python
-#Input arguments: filename to get text from, pattern, alphabet
+#Input arguments: filename to get text from, pattern, number of mismatches
 
 
 import sys
@@ -10,7 +10,7 @@ from libs.utils import read_genome
 def parse_args(argv):
     filename = argv[1]
     pattern = argv[2]
-    alphabet = argv[3] # number of max mismatches allowed
+    n = argv[3] # number of max mismatches allowed
     return filename, pattern, alphabet
 
 
@@ -177,36 +177,8 @@ class BoyerMoore(object):
 ####################################    
 
 
-def boyer_moore(p, p_bm, t):
-    """ Do boyer-mooore matching, p = pattern, t = text, p_bm = BoyerMoore object - preprocessing for pattern p"""
-    i = 0
-    occurrences = []
-    alignmnets_tried = 0
-    character_comparison_total = 0
-    while i < len(t) - len(p) + 1:
-        shift = 1
-        mismatched = False
-        character_comparison = 0
-        alignmnets_tried += 1
-        for j in range(len(p)-1, -1, -1):
-            character_comparison += 1
-            if p[j] != t[i+j]:
-                skip_bc = p_bm.bad_character_rule(j, t[i+j])
-                skip_gs = p_bm.good_suffix_rule(j)
-                shift = max(shift, skip_bc, skip_gs)
-                mismatched = True
-                break
-        character_comparison_total = character_comparison_total + character_comparison
-        if not mismatched:
-            occurrences.append(i)
-            skip_gs = p_bm.match_skip()
-            shift = max(shift, skip_gs)
-        i += shift
-    return occurrences, character_comparison_total, alignmnets_tried 
-
-
-""" def approximate_match(p, t, n)
-    approx. matching using the pigeonhole principle, n number of misatches allowed
+def approximate_match(p, t, n):
+    """approx. matching using the pigeonhole principle, n number of misatches allowed"""
     segment_length = int(round(len(p) / float(n + 1)))
     allmatches = set()
     for i in range(n+1):
@@ -235,13 +207,13 @@ def boyer_moore(p, p_bm, t):
             if mismatch <= n:
                 all_matches.add(n - start)
     return list(all_matches) #stored as a set so that there will not be multiple entries for matching multiple matching partitions
- """
+
 
 def main():
     filename, pattern , alphabet = parse_args(sys.argv)
     t = read_genome(filename)
     p_bm = BoyerMoore(pattern, alphabet)
-    occurences, character_comparison_total, alignmnets_tried = boyer_moore(pattern, p_bm, t)
+    occurences, character_comparison_total, alignmnets_tried = boyer_moore(pattern, t, n)
     print(" The pattern matches the genome %d times at locations %s " % (len(occurences), occurences))
     print(" alignments tried: %d, character comparisons: %d" % (alignmnets_tried, character_comparison_total))
    
